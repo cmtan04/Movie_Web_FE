@@ -15,6 +15,7 @@
     "antd": "^6.1.4",
     "axios": "^1.13.2",
     "dotenv": "^17.2.3",
+    "emoji-picker-react": "^4.16.1",
     "lodash": "^4.17.21",
     "marquee": "^0.2.1",
     "react": "^19.2.3",

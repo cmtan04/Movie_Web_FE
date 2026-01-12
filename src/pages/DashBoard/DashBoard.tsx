@@ -1,6 +1,9 @@
+import { useNavigate } from "react-router";
 import { TopBar } from "../../components/TopBar/TopBar";
 import { FilmCard } from "./components/FilmCard/FilmCard";
 import "./dashboard.scss";
+import { useState } from "react";
+import { ChatField } from "./components/ChatField";
 
 const hotFilms = [
   {
@@ -41,19 +44,30 @@ const hotFilms = [
   },
 ];
 export const DashBoard = () => {
+  const navigate = useNavigate();
+  const [show, setShow] = useState(false);
+  const onDetailClick = (id: number) => {
+    // navigate()
+  };
   return (
     <div className="dash__board">
       <div className="dash__board-row-1">
         <TopBar onSearchSubmit={() => {}} />
       </div>
 
-      <div className="dash__board-row-2">
+      <div className="dash__board-row">
         <div className="header">
           <h1>Phim HOT</h1>
         </div>
         <div className="body">
           {hotFilms.map((film) => (
-            <div key={film.id} className="carousel-item">
+            <div
+              key={film.id}
+              className="carousel-item"
+              onClick={() => {
+                onDetailClick(2);
+              }}
+            >
               <FilmCard
                 title={film.title}
                 imageUrl={film.imageUrl}
@@ -64,13 +78,21 @@ export const DashBoard = () => {
           ))}
         </div>
       </div>
-      <div className="dash__board-row-2">
+      <div className="dash__board-row">
         <div className="header">
+          {/* Sửa class css mỗi loại film 1 màu header */}
           <h1>Phim HAY</h1>
         </div>
         <div className="body">
           {hotFilms.map((film) => (
-            <div key={film.id} className="carousel-item">
+            <div
+              key={film.id}
+              className="carousel-item"
+              onClick={() => {
+                onDetailClick(2);
+              }}
+            >
+              {/* Khi connect api thì gán trường id vào onclick để navigate sang detail  */}
               <FilmCard
                 title={film.title}
                 imageUrl={film.imageUrl}
@@ -81,13 +103,19 @@ export const DashBoard = () => {
           ))}
         </div>
       </div>
-      <div className="dash__board-row-2">
+      <div className="dash__board-row">
         <div className="header">
           <h1>Phim mới</h1>
         </div>
         <div className="body">
           {hotFilms.map((film) => (
-            <div key={film.id} className="carousel-item">
+            <div
+              key={film.id}
+              className="carousel-item"
+              onClick={() => {
+                onDetailClick(2);
+              }}
+            >
               <FilmCard
                 title={film.title}
                 imageUrl={film.imageUrl}
@@ -98,6 +126,19 @@ export const DashBoard = () => {
           ))}
         </div>
       </div>
+
+      {show ? (
+        <div className="chat_panel">
+          <ChatField onClose={() => setShow(false)} />
+        </div>
+      ) : (
+        <img
+          onClick={() => setShow(true)}
+          src="https://example.com/image5.jpg"
+          alt=""
+          className="dash__board-chat"
+        />
+      )}
     </div>
   );
 };
