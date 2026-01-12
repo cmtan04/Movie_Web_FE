@@ -1,9 +1,37 @@
+@import "../../color.scss";
+
 .dash__board {
   width: 100%;
-  height: 100dvh;
+  height: fit-content;
+  min-height: 100dvh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
   background-image: url("../../assets/bg-login.jpg");
+  position: relative;
+
+  &-row {
+    &-2 {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      margin-top: 70px;
+      .header {
+        background-color: #e50914;
+        font-size: 16px;
+        font-weight: 600;
+        color: $white_color !important;
+        font-family: $font_family_1;
+        padding: 4px 12px;
+        border-radius: 12px;
+      }
+      .body {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 12px;
+      }
+    }
+  }
 }
