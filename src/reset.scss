@@ -1,0 +1,137 @@
+/* CSS Reset - Tắt border và style mặc định của trình duyệt */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* Tắt border cho tất cả elements */
+*,
+*::before,
+*::after {
+  border: none;
+  outline: none;
+}
+
+/* Reset cho body */
+body {
+  margin: 0;
+  padding: 0;
+  border: none;
+  outline: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Reset cho input, textarea, button */
+input,
+textarea,
+button,
+select {
+  border: none;
+  outline: none;
+  background: none;
+  font-family: inherit;
+  font-size: inherit;
+}
+
+/* Tắt border khi focus */
+input:focus,
+textarea:focus,
+button:focus,
+select:focus,
+a:focus {
+  outline: none;
+  border: none;
+}
+
+/* Reset cho link */
+a {
+  text-decoration: none;
+  color: inherit;
+  border: none;
+  outline: none;
+}
+
+/* Reset cho list */
+ul,
+ol {
+  list-style: none;
+}
+
+/* Reset cho image */
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  border: none;
+  outline: none;
+}
+
+/* Reset cho table */
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+  border: none;
+}
+
+/* Reset cho form elements */
+fieldset {
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+
+legend {
+  padding: 0;
+}
+
+/* Tắt appearance mặc định */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="search"],
+input[type="tel"],
+input[type="url"],
+textarea,
+select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+/* Tắt border cho button */
+button {
+  cursor: pointer;
+  border: none;
+  outline: none;
+  background: none;
+}
+
+button:focus,
+button:active {
+  outline: none;
+  border: none;
+}
+
+/* Tắt resize cho textarea */
+textarea {
+  resize: none;
+}
+
+/* Tắt border cho iframe */
+iframe {
+  border: none;
+}
+
+/* Remove blue highlight on mobile */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
