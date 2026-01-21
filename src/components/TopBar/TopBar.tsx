@@ -1,14 +1,46 @@
-import { Button, Menu, MenuProps } from "antd";
+import { Button, Menu, MenuProps, Form } from "antd";
 import { DashOutlined, DownOutlined } from "@ant-design/icons";
 import bgLogin from "../../assets/bg-login.jpg";
 import { FormSearch } from "../FormSearch/formSearch";
+import SearchDropdown from "../SearchDropdown";
 import "./topbar.scss";
+import { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 
 interface TopBarProps {
   onSearchSubmit: (value: any) => void;
 }
 
 export const TopBar = (props: TopBarProps) => {
+  const [searchValue, setSearchValue] = useState("");
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [isNavigating, setIsNavigating] = useState(false);
+  const debounceTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const navigate = useNavigate();
+
+  // Debounce search: trigger after user stops typing for 500ms
+  useEffect(() => {
+    if (debounceTimeout.current) {
+      clearTimeout(debounceTimeout.current);
+    }
+
+    if (searchValue.trim() && !isNavigating) {
+      setShowDropdown(true);
+      debounceTimeout.current = setTimeout(() => {
+        props.onSearchSubmit(searchValue);
+      }, 500);
+    } else {
+      setShowDropdown(false);
+      props.onSearchSubmit("");
+    }
+
+    return () => {
+      if (debounceTimeout.current) {
+        clearTimeout(debounceTimeout.current);
+      }
+    };
+  }, [searchValue, isNavigating]);
+
   const items: MenuProps["items"] = [
     {
       key: "phimle",
@@ -131,26 +163,92 @@ export const TopBar = (props: TopBarProps) => {
   ];
 
   const handleMenuClick: MenuProps["onClick"] = (e) => {
-    console.log("Menu clicked:", e.key);
+    const genreMap: { [key: string]: string } = {
+      'hanh-dong': '28',
+      'tinh-cam': '10749',
+      'hai-huoc': '35',
+      'kinh-di': '27',
+      'vien-tuong': '878',
+      'tam-ly': '53',
+      'hinh-su': '80',
+      'phieu-luu': '12',
+    };
+
+    const countryMap: { [key: string]: string } = {
+      'viet-nam': 'VN',
+      'han-quoc': 'KR',
+      'trung-quoc': 'CN',
+      'nhat-ban': 'JP',
+      'thai-lan': 'TH',
+      'my': 'US',
+      'anh': 'GB',
+      'phap': 'FR',
+    };
+
+    let params = '';
+
+    if (e.key === 'phimle') {
+      params = '?type=movie';
+    } else if (e.key === 'phimbo') {
+      params = '?type=tv';
+    } else if (genreMap[e.key]) {
+      params = `?genre=${genreMap[e.key]}`;
+    } else if (countryMap[e.key]) {
+      params = `?country=${countryMap[e.key]}`;
+    } else if (e.key === 'phim-chieu-rap') {
+      params = '?year=' + new Date().getFullYear();
+    } else if (e.key === 'phim-sap-chieu') {
+      params = '?year=' + (new Date().getFullYear() + 1);
+    } else if (e.key === 'top-phim') {
+      params = '?sort=vote_average.desc';
+    } else if (e.key === 'phim-de-cu') {
+      params = '?sort=popularity.desc';
+    }
+
+    if (params) {
+      navigate(`/filter${params}`);
+    }
   };
 
   return (
     <div className="top__bar">
       <div className="left">
-        <div className="top__bar-logo">
-          <img src={bgLogin} alt="Logo" />
+        <div className="top__bar-logo" onClick={() => navigate('/dash-board')} style={{ cursor: 'pointer' }}>
+          MOVIE
         </div>
 
         <div className="top__bar-search">
-          <FormSearch
-            label=""
-            name="search"
-            allowClear
-            onSearch={(value) => {
-              props.onSearchSubmit(value);
+          <Form
+            onFinish={(values) => {
+              const value = values.search;
+              if (value && value.trim()) {
+                setIsNavigating(true);
+                navigate(`/search?query=${encodeURIComponent(value.trim())}`);
+                setShowDropdown(false);
+                setSearchValue("");
+                setTimeout(() => setIsNavigating(false), 100);
+              }
             }}
-            placeholder="Tìm kiếm phim, diễn viên"
-          />
+          >
+            <FormSearch
+              label=""
+              name="search"
+              allowClear
+              onChange={(e: any) => {
+                setSearchValue(e.target.value);
+              }}
+              placeholder="Tìm kiếm phim, diễn viên"
+            />
+          </Form>
+          {showDropdown && searchValue.trim() && (
+            <SearchDropdown
+              query={searchValue}
+              onClose={() => {
+                setShowDropdown(false);
+                setSearchValue("");
+              }}
+            />
+          )}
         </div>
         <div className="top__bar-menu">
           <Menu

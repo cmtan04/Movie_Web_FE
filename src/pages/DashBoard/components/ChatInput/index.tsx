@@ -51,6 +51,14 @@ export const ChatInput = (props: ChatInputProps) => {
     }
   }, [message]);
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    // Enter để gửi, Shift+Enter để xuống dòng
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleSubmitSend();
+    }
+  };
+
   const handleSubmitSend = async () => {
     if (!message.trim() && files.length === 0) return;
 
@@ -138,6 +146,7 @@ export const ChatInput = (props: ChatInputProps) => {
             className="chat-input-element chat-input-textarea"
             value={message}
             onChange={(e) => setMessage(e.target.value)}
+            onKeyDown={handleKeyDown}
             onSelect={(e) => {
               cursorPositionRef.current = e.currentTarget.selectionStart;
             }}

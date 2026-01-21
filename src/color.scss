@@ -9,6 +9,12 @@ $secondary_color: #00609c;
 $text_alert_1: #e52500;
 $text_alert_2: #007bff;
 
+// Layout sizes
+$card_width: 200px;
+$card_gap: 16px;
+$cards_per_row: 5;
+$content_width: calc(($card_width * $cards_per_row) + ($card_gap * ($cards_per_row - 1)));
+
 //Font Family
 $font_family_1: "DM Sans", "system-ui", sans-serif;
 
@@ -27,3 +33,5 @@ $shadow-error-red: rgba(255, 77, 79, 0.2);
 $shadow-warning-orange: rgba(250, 173, 20, 0.2);
 $color-white: #ffffff;
 $background-color: #f7f8f9;
+$black: #000000;
+$white: #ffffff;

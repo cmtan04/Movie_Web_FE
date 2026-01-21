@@ -1,131 +1,118 @@
 import { useNavigate } from "react-router";
 import { TopBar } from "../../components/TopBar/TopBar";
-import { FilmCard } from "./components/FilmCard/FilmCard";
+import MovieList from "../../components/MovieList/MovieList";
 import "./dashboard.scss";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ChatField } from "./components/ChatField";
+import { Banner } from "../../components/Banner/Banner";
+import axios from "axios";
+import chatbotIcon from "../../assets/chatbot.png";
 
-const hotFilms = [
-  {
-    id: 1,
-    title: "The Dark Knight",
-    imageUrl: "https://example.com/image1.jpg",
-    description: "Khi mối đe dọa được gọi là Joker xuất hiện từ quá khứ...",
-    time: 152,
+export const movieClient = axios.create({
+  baseURL: import.meta.env.VITE_BASE_URL,
+  headers: {
+    accept: "application/json",
+    Authorization: "Bearer " + import.meta.env.VITE_API_TOKEN,
   },
-  {
-    id: 2,
-    title: "Inception",
-    imageUrl: "https://example.com/image2.jpg",
-    description:
-      "Một tên trộm lấy cắp bí mật doanh nghiệp thông qua giấc mơ...",
-    time: 148,
-  },
-  {
-    id: 3,
-    title: "Interstellar",
-    imageUrl: "https://example.com/image3.jpg",
-    description: "Một nhóm khám phá du hành qua lỗ sâu trong không gian...",
-    time: 169,
-  },
-  {
-    id: 4,
-    title: "Parasite",
-    imageUrl: "https://example.com/image4.jpg",
-    description: "Tham vọng không biết ranh giới giữa các tầng lớp...",
-    time: 132,
-  },
-  {
-    id: 5,
-    title: "Avengers: Endgame",
-    imageUrl: "https://example.com/image5.jpg",
-    description: "Sau những sự kiện tàn khốc, các Avengers tập hợp lần cuối...",
-    time: 181,
-  },
-];
+  params: {
+    api_key: import.meta.env.VITE_API_KEY,
+    language: 'vi-VN'
+  }
+})
+
 export const DashBoard = () => {
   const navigate = useNavigate();
+  const [hotMovie, setHotMovie] = useState([]);
+  const [popularMovie, setPopularMovie] = useState([]);
+  const [upcomingMovie, setUpcomingMovie] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [bannerMovie, setBannerMovie] = useState();
+  const [genres, setGenres] = useState();
+  const [countries, setCountries] = useState();
   const [show, setShow] = useState(false);
+
+
+
+  const fetchMovie = async (url: string) => {
+    setIsLoading(true);
+    try {
+      const res = await movieClient.get(url);
+      const data = res.data.results;
+      return data;
+
+    } catch (err) {
+      console.error("Lỗi fetch:", err);
+    }
+    finally {
+      setIsLoading(false);
+    }
+  }
+
+  const handleSearchSubmit = async (query: string) => {
+    // Search is now handled entirely by SearchDropdown in TopBar
+    // This function kept for TopBar compatibility
+  };
+
+  const handleSetMovie = async () => {
+    try {
+      const [hotData, popularData, bannerData, upcomingData] = await Promise.all([
+        fetchMovie("/movie/popular"),
+        fetchMovie("/movie/top_rated"),
+        fetchMovie("/movie/now_playing"),
+        fetchMovie("/movie/upcoming")
+      ]);
+      if (hotData && popularData && bannerData && upcomingData) {
+        setHotMovie(hotData);
+        setPopularMovie(popularData);
+        setBannerMovie(bannerData);
+        setUpcomingMovie(upcomingData);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleSetData = async () => {
+    const MAJOR_CINEMAS = ['VN', 'US', 'KR', 'JP', 'HK', 'CN', 'TH', 'GB', 'FR', 'IN'];
+    try {
+      const [genresRes, countriesRes] = await Promise.all([
+        movieClient.get("/genre/movie/list"),
+        movieClient.get("/configuration/countries")
+      ])
+      if (genresRes.data && countriesRes.data) {
+        const genres = genresRes.data.genres;
+        const filtered = countriesRes.data.filter((c: any) => MAJOR_CINEMAS.includes(c.iso_3166_1));
+        setGenres(genres);
+        setCountries(filtered);
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  useEffect(() => {
+    handleSetMovie();
+    handleSetData();
+  }, []);
   const onDetailClick = (id: number) => {
     // navigate()
   };
   return (
     <div className="dash__board">
       <div className="dash__board-row-1">
-        <TopBar onSearchSubmit={() => {}} />
+        <TopBar onSearchSubmit={handleSearchSubmit} />
       </div>
-
-      <div className="dash__board-row">
-        <div className="header">
-          <h1>Phim HOT</h1>
-        </div>
-        <div className="body">
-          {hotFilms.map((film) => (
-            <div
-              key={film.id}
-              className="carousel-item"
-              onClick={() => {
-                onDetailClick(2);
-              }}
-            >
-              <FilmCard
-                title={film.title}
-                imageUrl={film.imageUrl}
-                description={film.description}
-                time={film.time}
-              />
-            </div>
-          ))}
-        </div>
+      <div className="dash__board-banner">
+        <Banner
+          movies={bannerMovie}
+        />
       </div>
-      <div className="dash__board-row">
-        <div className="header">
-          {/* Sửa class css mỗi loại film 1 màu header */}
-          <h1>Phim HAY</h1>
-        </div>
-        <div className="body">
-          {hotFilms.map((film) => (
-            <div
-              key={film.id}
-              className="carousel-item"
-              onClick={() => {
-                onDetailClick(2);
-              }}
-            >
-              {/* Khi connect api thì gán trường id vào onclick để navigate sang detail  */}
-              <FilmCard
-                title={film.title}
-                imageUrl={film.imageUrl}
-                description={film.description}
-                time={film.time}
-              />
-            </div>
-          ))}
-        </div>
+      <MovieList title="Phim HOT" movies={hotMovie} isLoading={isLoading} />
+      <div>
+        {/* Sửa class css mỗi loại film 1 màu header */}
+        <MovieList title="Phim HAY" movies={popularMovie} isLoading={isLoading} />
       </div>
-      <div className="dash__board-row">
-        <div className="header">
-          <h1>Phim mới</h1>
-        </div>
-        <div className="body">
-          {hotFilms.map((film) => (
-            <div
-              key={film.id}
-              className="carousel-item"
-              onClick={() => {
-                onDetailClick(2);
-              }}
-            >
-              <FilmCard
-                title={film.title}
-                imageUrl={film.imageUrl}
-                description={film.description}
-                time={film.time}
-              />
-            </div>
-          ))}
-        </div>
-      </div>
+      <MovieList title="Phim Sắp Chiếu" movies={upcomingMovie} isLoading={isLoading} />
 
       {show ? (
         <div className="chat_panel">
@@ -134,10 +121,11 @@ export const DashBoard = () => {
       ) : (
         <img
           onClick={() => setShow(true)}
-          src="https://example.com/image5.jpg"
-          alt=""
+          src={chatbotIcon}
+          alt="chatbot"
           className="dash__board-chat"
         />
+
       )}
     </div>
   );

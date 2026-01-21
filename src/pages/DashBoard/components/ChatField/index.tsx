@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { ChatItem } from "../ChatItem";
 import { ChatInput } from "../ChatInput";
 import close from "../../../../assets/svg/icn-clear.svg";
@@ -19,89 +19,32 @@ export interface ChatMessage {
 
 export const mockConversation: ChatMessage[] = [
   {
-    id: "msg-100",
-    sender: "user",
-    message: "Xin chào shop",
-    timestamp: "09:00",
-    status: "read",
-  },
-  {
     id: "msg-101",
     sender: "bot",
-    message: "Xin chào! Chúng tôi có thể giúp gì cho bạn?",
-    timestamp: "09:01",
-    status: "read",
-  },
-  {
-    id: "msg-102",
-    sender: "user",
-    message: "Em muốn xem thông tin đơn hàng #12345",
-    timestamp: "09:02",
-    status: "read",
-  },
-  {
-    id: "msg-103",
-    sender: "admin",
-    message:
-      "Đơn hàng #12345 của bạn đang trong quá trình vận chuyển. Dự kiến giao hàng vào ngày mai.",
-    timestamp: "09:05",
-    status: "read",
-  },
-  {
-    id: "msg-104",
-    sender: "user",
-    message: "Vậy em có thể thay đổi địa chỉ giao hàng được không ạ?",
-    timestamp: "09:07",
-    status: "read",
-  },
-  {
-    id: "msg-105",
-    sender: "admin",
-    message:
-      "Để thay đổi địa chỉ, bạn vui lòng cung cấp địa chỉ mới và số điện thoại liên hệ nhé",
-    timestamp: "09:10",
-    status: "read",
-  },
-  {
-    id: "msg-106",
-    sender: "user",
-    message: "Địa chỉ mới: 123 Đường ABC, Quận 1, TP.HCM\nSĐT: 0909123456",
-    timestamp: "09:12",
-    status: "read",
-  },
-  {
-    id: "msg-107",
-    sender: "user",
-    message: "Đây là ảnh chụp hóa đơn",
-    timestamp: "09:13",
-    images: [
-      "https://picsum.photos/400/300?random=10",
-      "https://picsum.photos/400/300?random=11",
-    ],
-    status: "read",
-  },
-  {
-    id: "msg-108",
-    sender: "admin",
-    message:
-      "Cảm ơn bạn. Chúng tôi đã cập nhật địa chỉ giao hàng mới. Đơn hàng sẽ được giao đến địa chỉ mới.",
-    timestamp: "09:20",
-    status: "read",
-  },
-  {
-    id: "msg-109",
-    sender: "user",
-    message: "Cảm ơn shop rất nhiều! 😊",
-    timestamp: "09:22",
-    status: "delivered",
-  },
+    message: "Chào bạn! Tôi là MovieBot, trợ lý ảo của bạn. Tôi có thể giúp gì cho bạn hôm nay?",
+    timestamp: new Date().toLocaleTimeString("vi-VN", {
+      hour: "2-digit",
+      minute: "2-digit",
+    }),
+    status: "read"
+  }
+
 ];
 
 interface ChatProps {
   onClose: () => void;
 }
+
 export const ChatField = (props: ChatProps) => {
   const [messages, setMessages] = useState<ChatMessage[]>(mockConversation);
+  const bodyRef = useRef<HTMLDivElement>(null);
+
+  // Auto scroll to bottom khi có message mới
+  useEffect(() => {
+    if (bodyRef.current) {
+      bodyRef.current.scrollTop = bodyRef.current.scrollHeight;
+    }
+  }, [messages]);
 
   const handleSubmit = async (data: ChatInputData) => {
     const imageUrls: string[] = [];
@@ -143,31 +86,108 @@ export const ChatField = (props: ChatProps) => {
 
     setMessages((prev) => [...prev, newMessage]);
 
-    setTimeout(() => {
-      const botMessage = createNewMessage(
-        "bot",
-        "Cảm ơn bạn đã nhắn tin. Chúng tôi sẽ phản hồi sớm nhất!"
-      );
-      setMessages((prev) => [...prev, botMessage]);
-    }, 1000);
+    // Tạo EventSource cho streaming
+    const eventSource = new EventSource(`${import.meta.env.VITE_BE_URL}/chat/stream?message=${encodeURIComponent(data.message)}`);
+
+    eventSource.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+
+      if (data.type === 'db_search') {
+        // Thêm loading DB
+        const loadingMessage = createNewMessage("bot", data.message);
+        setMessages((prev) => [...prev, loadingMessage]);
+      } else if (data.type === 'db_not_found') {
+        // Cập nhật message DB
+        setMessages((prev) => prev.map(msg =>
+          msg.message.includes('⏳ Đang tìm trong kho dữ liệu')
+            ? { ...msg, message: data.message }
+            : msg
+        ));
+      } else if (data.type === 'tmdb_found') {
+        // Thêm message TMDB
+        const tmdbMessage = createNewMessage("bot", data.message);
+        setMessages((prev) => [...prev, tmdbMessage]);
+      } else if (data.type === 'google_search') {
+        // Thêm message Google
+        const googleMessage = createNewMessage("bot", data.message);
+        setMessages((prev) => [...prev, googleMessage]);
+      } else if (data.type === 'google_found') {
+        // Cập nhật message Google
+        setMessages((prev) => prev.map(msg =>
+          msg.message.includes('⚠️ TMDB không tìm thấy')
+            ? { ...msg, message: data.message }
+            : msg
+        ));
+      } else if (data.type === 'final') {
+        // Xóa loading messages, thêm kết quả cuối
+        setMessages((prev) => {
+          let filteredMessages = prev.filter(
+            (msg) =>
+              !msg.message.includes('Đang tìm') &&
+              !msg.message.includes('Không tìm thấy') &&
+              !msg.message.includes('Tìm thấy') &&
+              !msg.message.includes('Internet không tìm thấy')
+          );
+          return [...filteredMessages, createNewMessage("bot", data.message)];
+        });
+        eventSource.close();
+      } else if (data.type === 'error') {
+        // Xử lý lỗi
+        const errorMessage = createNewMessage("bot", data.message);
+        setMessages((prev) => [...prev, errorMessage]);
+        eventSource.close();
+      }
+    };
+
+    eventSource.onerror = () => {
+      console.error("EventSource error");
+      eventSource.close();
+    };
 
     return true;
+  };
+
+  const handleClearChat = async () => {
+    if (!confirm("Bạn có chắc muốn xóa lịch sử chat không?")) return;
+
+    try {
+      const response = await fetch(`${import.meta.env.VITE_BE_URL}/chat/clear`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (response.ok) {
+        setMessages(mockConversation);
+      }
+    } catch (error) {
+      console.error("Error clearing chat:", error);
+    }
   };
 
   return (
     <div className="chat-field">
       <div className="header">
-        <h1>Admin</h1>
-        <img
-          crossOrigin="anonymous"
-          src={close}
-          alt=""
-          onClick={() => props.onClose()}
-          className="chat-preview-modal-close"
-        />
+        <div className="header-left">
+          <h1>Movie Chatbot(Beta)</h1>
+          <button onClick={handleClearChat} className="reset-btn">
+            <span className="icon">🔄</span>
+            <span className="label">Reset</span>
+          </button>
+        </div>
+        <div className="header-right">
+          <img
+            crossOrigin="anonymous"
+            src={close}
+            alt=""
+            onClick={() => props.onClose()}
+            className="chat-preview-modal-close"
+          />
+        </div>
       </div>
 
-      <div className="body">
+      <div className="body" ref={bodyRef}>
         {messages.map((message) => (
           <ChatItem
             key={message.id}

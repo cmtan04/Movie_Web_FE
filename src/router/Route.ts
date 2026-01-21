@@ -9,6 +9,10 @@ export const ROUTER_NAME = {
   //Authen ends
 
   DASH_BOARD: "dash-board",
+  MOVIE_DETAIL: "movie-detail",
+  TV_DETAIL: "tv-detail",
+  FILTER: "filter",
+  SEARCH: "search",
 };
 
 export const ROUTER_PATH = {
@@ -19,4 +23,8 @@ export const ROUTER_PATH = {
   RESET_PASSWORD: `${ROUTER}/${ROUTER_NAME.RESET_PASSWORD}`,
   //Authen ends
   DASH_BOARD: `${ROUTER}/${ROUTER_NAME.DASH_BOARD}`,
+  MOVIE_DETAIL: `${ROUTER}/${ROUTER_NAME.MOVIE_DETAIL}/:movieId`,
+  TV_DETAIL: `${ROUTER}/${ROUTER_NAME.TV_DETAIL}/:tvId`,
+  FILTER: `${ROUTER}/${ROUTER_NAME.FILTER}`,
+  SEARCH: `${ROUTER}/${ROUTER_NAME.SEARCH}`,
 };

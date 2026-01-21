@@ -1,4 +1,4 @@
-@import "../../../../color.scss";
+@use "../../../../color.scss" as *;
 
 .film__card {
   width: 320px;

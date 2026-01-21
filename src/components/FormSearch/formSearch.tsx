@@ -19,6 +19,9 @@ interface IFormSearch {
   bordered?: boolean;
   status?: "error" | "warning";
   onSearch?: (value: string) => void;
+  onChange?: (e: any) => void;
+  onPressEnter?: (e: any) => void;
+  onKeyDown?: (e: any) => void;
 }
 
 export const FormSearch = ({
@@ -36,6 +39,9 @@ export const FormSearch = ({
   bordered = true,
   status,
   onSearch,
+  onChange,
+  onPressEnter,
+  onKeyDown,
 }: IFormSearch) => {
   return (
     <Form.Item
@@ -56,6 +62,9 @@ export const FormSearch = ({
         bordered={bordered}
         status={status}
         onSearch={onSearch}
+        onChange={onChange}
+        onPressEnter={onPressEnter}
+        onKeyDown={onKeyDown}
         {...searchProps}
       />
     </Form.Item>

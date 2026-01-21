@@ -1,4 +1,4 @@
-@import "../../color.scss";
+@use "../../color.scss" as *;
 
 .form-input {
   margin-bottom: 16px;
@@ -65,7 +65,7 @@
     }
 
     // Character count (showCount)
-    + .ant-input-data-count {
+    +.ant-input-data-count {
       color: $color-gray-6;
       font-size: 12px;
       margin-top: 4px;
