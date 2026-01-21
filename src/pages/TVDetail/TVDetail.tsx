@@ -4,7 +4,6 @@ import { TopBar } from "../../components/TopBar/TopBar";
 import { ChatField } from "../DashBoard/components/ChatField";
 import chatbotIcon from "../../assets/chatbot.png";
 import { movieClient } from "../DashBoard/DashBoard";
-import '../../components/TopBar/TopBar.scss';
 import "./TVDetail.scss";
 import { useNavigate } from "react-router-dom";
 
