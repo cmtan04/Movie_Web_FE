@@ -1,9 +1,9 @@
 import { useRef, useState, useEffect } from "react";
-import send from "../../../../assets/svg/icn-send.svg";
-import remove from "../../../../assets/svg/icn-remove-image.svg";
-import emoji from "../../../../assets/svg/icn-emoji.svg";
+import send from "../../../assets/svg/icn-send.svg";
+import remove from "../../../assets/svg/icn-remove-image.svg";
+import emoji from "../../../assets/svg/icn-emoji.svg";
 import EmojiPicker, { type EmojiClickData } from "emoji-picker-react";
-import "../../dashboard.scss";
+import "../chatbot.scss";
 
 interface ChatInputData {
   message: string;

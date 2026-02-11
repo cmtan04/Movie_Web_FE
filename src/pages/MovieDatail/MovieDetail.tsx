@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from 'react-router-dom';
 import { TopBar } from "../../components/TopBar/TopBar";
-import { ChatField } from "../DashBoard/components/ChatField";
+import { ChatField } from "../../components/ChatBot/ChatField";
 import chatbotIcon from "../../assets/chatbot.png";
 import { movieClient } from "../DashBoard/DashBoard";
 import "./MovieDetail.scss";

@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { ChatItem } from "../ChatItem";
 import { ChatInput } from "../ChatInput";
-import close from "../../../../assets/svg/icn-clear.svg";
+import close from "../../../assets/svg/icn-clear_cancel.svg";
 
 interface ChatInputData {
   message: string;
@@ -94,13 +94,13 @@ export const ChatField = (props: ChatProps) => {
 
       if (data.type === 'db_search') {
         // Thêm loading DB
-        const loadingMessage = createNewMessage("bot", data.message);
+        const loadingMessage = createNewMessage("bot", "Xin chờ 1 chút ...");
         setMessages((prev) => [...prev, loadingMessage]);
       } else if (data.type === 'db_not_found') {
         // Cập nhật message DB
         setMessages((prev) => prev.map(msg =>
-          msg.message.includes('⏳ Đang tìm trong kho dữ liệu')
-            ? { ...msg, message: data.message }
+          msg.message.includes('db_searching')
+            ? { ...msg, message: "Mình chưa tìm thấy thông tin trong dữ liệu. Đợi mình 1 chút nhaa" }
             : msg
         ));
       } else if (data.type === 'tmdb_found') {

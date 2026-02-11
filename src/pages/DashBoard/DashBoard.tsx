@@ -3,7 +3,7 @@ import { TopBar } from "../../components/TopBar/TopBar";
 import MovieList from "../../components/MovieList/MovieList";
 import "./dashboard.scss";
 import { useEffect, useState } from "react";
-import { ChatField } from "./components/ChatField";
+import { ChatField } from "../../components/ChatBot/ChatField";
 import { Banner } from "../../components/Banner/Banner";
 import axios from "axios";
 import chatbotIcon from "../../assets/chatbot.png";

@@ -1,5 +1,4 @@
-import { Route, Routes } from "react-router-dom";
-import { Navigate } from "react-router-dom";
+import { Route, Routes, Navigate } from "react-router-dom";
 import { ROUTER_PATH } from "./Route";
 import { SuspenseWrapper } from "../providers";
 import { SignIn } from "../pages/Auth/SignIn/SignIn";

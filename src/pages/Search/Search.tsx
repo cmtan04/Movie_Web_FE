@@ -5,7 +5,7 @@ import "../../components/TopBar/topbar.scss";
 import axios from "axios";
 import { ROUTER_PATH } from "../../router/Route";
 import "./Search.scss";
-import { ChatField } from "../DashBoard/components/ChatField";
+import { ChatField } from "../../components/ChatBot/ChatField";
 import chatbotIcon from "../../assets/chatbot.png";
 import { movieClient } from "../DashBoard/DashBoard";
 

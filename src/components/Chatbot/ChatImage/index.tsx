@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import close from "../../../../assets/svg/icn-clear_cancel.svg";
+import close from "../../../assets/svg/icn-clear_cancel.svg";
 
 interface ChatImageProps {
   imageUrl: string;

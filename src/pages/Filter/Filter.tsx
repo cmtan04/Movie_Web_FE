@@ -7,7 +7,7 @@ import { FilterButtonGroup } from "../../components/FilterButtonGroup/FilterButt
 import { FilterDropdown } from "../../components/FilterDropdown/FilterDropdown";
 import { useFilter } from "../../hooks/useFilter";
 import { GENRES, MAJOR_COUNTRIES, MOVIE_TYPES, RATINGS, VERSIONS, YEARS, SORTS } from "../../constants";
-import { ChatField } from "../DashBoard/components/ChatField";
+import { ChatField } from "../../components/ChatBot/ChatField";
 import chatbotIcon from "../../assets/chatbot.png";
 
 export const Filter = () => {

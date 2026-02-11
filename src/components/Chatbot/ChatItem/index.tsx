@@ -1,5 +1,5 @@
 import { ChatImage } from "../ChatImage";
-import tick from "../../../../assets/svg/icn-tick-double-blue.svg";
+import tick from "../../../assets/svg/icn-tick-double-blue.svg";
 
 interface ChatItemContent {
   text?: string;
@@ -22,9 +22,8 @@ export const ChatItem = (props: ChatItemProps) => {
       <div className={`chat-item_section-1`}>
         {files.length > 0 && (
           <div
-            className={`chat-images-grid ${
-              hasMultipleImages ? "multiple" : "single"
-            }`}
+            className={`chat-images-grid ${hasMultipleImages ? "multiple" : "single"
+              }`}
           >
             {files.slice(0, 3).map((file: any, index: number) => {
               const isLastDisplayed = index === 2 && files.length > 3;
